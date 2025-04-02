@@ -1,0 +1,17 @@
+default:
+  rhino_log_level: !expr Sys.getenv("RHINO_LOG_LEVEL", "INFO")
+  rhino_log_file: !expr Sys.getenv("RHINO_LOG_FILE", NA)
+  db_path: "inst/extdata/test.db"
+  cache_directory: "tempdir"
+
+devel:
+  rhino_log_level: !expr Sys.getenv("RHINO_LOG_LEVEL", "INFO")
+  rhino_log_file: !expr Sys.getenv("RHINO_LOG_FILE", NA)
+  db_path: "inst/extdata/test.db"
+  cache_directory: "tempdir"
+
+production:
+  rhino_log_level: !expr Sys.getenv("RHINO_LOG_LEVEL", "INFO")
+  rhino_log_file: !expr Sys.getenv("RHINO_LOG_FILE", NA)
+  db_path: "edit_db_path.db"
+  cache_directory: "edit_cache_path"
