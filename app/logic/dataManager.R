@@ -2,7 +2,7 @@ box::use(
   R6[R6Class],
   shiny[reactiveValues, observeEvent, shinyOptions, req, reactive],
   RSQLite[SQLite],
-  DBI[dbReadTable, dbConnect, dbGetQuery],
+  DBI[dbReadTable, dbConnect, dbGetQuery, dbExistsTable, dbExecute],
   #dplyr[`%>%`, filter],
   stats[setNames],
   shinybusy[remove_modal_spinner, show_modal_spinner]
@@ -26,11 +26,24 @@ DataManager <- R6::R6Class(
         color = "#112446",
         text = "Loading database metadata")
       
-      if(DBI::dbExistsTable(con, "runs")){
+      print("oki")
+      
+      # If entry does not exist, insert the new entry
+      if(!dbExistsTable(con, "runs")){
+        dbExecute(con, "
+              CREATE TABLE runs (
+              ID INTEGER PRIMARY KEY AUTOINCREMENT,
+              RUN TEXT NOT NULL,
+              BDS_NUMBER TEXT NOT NULL
+              )
+            ")
+      }
+      
+      #if(DBI::dbExistsTable(con, "runs")){
         self$data$run_bds_match <- reactive({
           dbGetQuery(con, "SELECT * FROM runs")
         })
-      }
+      #}
       remove_modal_spinner()
     }
   )

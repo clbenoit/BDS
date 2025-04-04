@@ -1,5 +1,7 @@
 # This file allows packrat (used by rsconnect during deployment) to pick up dependencies.
+library(bsplus)
 library(dplyr)
+library(DT)
 library(markdown)
 library(rhino)
 library(RSQLite)

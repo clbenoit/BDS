@@ -133,7 +133,15 @@ server <- function(id) {
     
     Sys.setenv(R_CONFIG_ACTIVE = "devel")
     config <- get()
+    
+    if(!file.exists(config$db_path)){
+      dir.create("inst/extdata", recursive = TRUE)
+      message("Created new SQLite database at: ", config$db_path)
+    } else {
+      message("Opening existing SQLite database at: ", config$db_path)
+    }
     con <- dbConnect(SQLite(), config$db_path)
+    
     if (get("cache_directory") == "tempdir") {
       tempdir <- tempdir()
       dir.create(file.path(tempdir, "cache"))
@@ -156,7 +164,6 @@ server <- function(id) {
     
     output$table <- renderDataTable({
       req(DataManager$data$run_bds_match())
-      #req(DataManager$data$refresh_count)
       print(utils::head(DataManager$data$run_bds_match()))
       table <- DataManager$data$run_bds_match() %>% select(c("RUN","BDS_NUMBER")) %>% 
         mutate(Delete = paste0('<button id="', ns("delete_"), RUN, 
@@ -200,17 +207,6 @@ server <- function(id) {
             type = "error", html = TRUE
           )
         } else {
-          # If entry does not exist, insert the new entry
-          if(!dbExistsTable(DataManager$con, "runs")){
-            dbExecute(DataManager$con, "
-              CREATE TABLE runs (
-              ID INTEGER PRIMARY KEY AUTOINCREMENT,
-              RUN TEXT NOT NULL,
-              BDS_NUMBER TEXT NOT NULL
-              )
-            ")
-          }
-
           print(paste("Adding : ", input$delete_id))
           dbExecute(DataManager$con,
                     "INSERT INTO runs (RUN, BDS_NUMBER) VALUES (?, ?)",
